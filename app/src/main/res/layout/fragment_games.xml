@@ -4,7 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    tools:context=".ui.home.HomeFragment">
+    tools:context=".ui.games.GamesFragment">
 
     <RelativeLayout
         android:layout_width="match_parent"
@@ -17,15 +17,23 @@
             android:layout_alignParentTop="true"
             android:orientation="horizontal">
 
+            <ImageButton
+                android:layout_width="50dp"
+                android:layout_height="match_parent"
+                android:src="@drawable/baseline_category_24"
+                android:background="@android:color/transparent"
+                app:tint="@color/black" />
+
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:padding="10dp"
-                android:text="Live \nFootball TV"
+                android:text="All Games"
+                android:gravity="center"
                 android:fontFamily="@font/robotomedium"
                 android:textColor="@color/black"
-                android:textSize="24sp" />
+                android:textSize="20sp" />
 
             <ImageButton
                 android:layout_width="50dp"
@@ -49,7 +57,7 @@
                 android:layout_height="wrap_content"
                 android:layout_margin="10dp"
                 android:layout_weight="1"
-                android:hint="Seach Game"
+                android:hint="Seach here"
                 app:iconifiedByDefault="false"
                 android:background="@drawable/searchview_bg"
                 app:queryBackground="@android:color/transparent" />
@@ -76,35 +84,9 @@
                         android:layout_height="wrap_content" />
                 </RelativeLayout>
 
-                <androidx.cardview.widget.CardView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content">
-
-                    <RelativeLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent">
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="Top Events"
-                            android:fontFamily="@font/robotomedium"
-                            android:textColor="@color/black"
-                            android:textSize="16dp"
-                            android:padding="10dp"/>
-                    </RelativeLayout>
-                </androidx.cardview.widget.CardView>
-
-                <RelativeLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content">
-
-                    <androidx.recyclerview.widget.RecyclerView
-                        android:id="@+id/recyclerViewTop"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content" />
-                </RelativeLayout>
             </LinearLayout>
 
         </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
     </RelativeLayout>
+
 </FrameLayout>

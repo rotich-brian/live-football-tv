@@ -2,31 +2,45 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="@color/teal_700"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:background="@drawable/each_event_bg"
     android:orientation="horizontal"
-    android:layout_marginTop="5dp"
-    android:layout_marginHorizontal="5dp"
-    android:padding="5dp">
+    android:layout_marginTop="10dp"
+    android:layout_marginHorizontal="10dp"
+    android:padding="5dp"
+    android:gravity="center">
 
-    <ImageView
-        android:id="@+id/event_Thumb"
-        android:layout_width="100dp"
-        android:layout_height="50dp"
-        android:scaleType="fitCenter"
-        android:src="@drawable/sample_thumb"/>
+    <androidx.cardview.widget.CardView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:cardCornerRadius="10dp">
+
+        <ImageView
+            android:id="@+id/event_Thumb"
+            android:layout_width="70dp"
+            android:layout_height="70dp"
+            android:scaleType="centerCrop"
+            android:src="@drawable/sample_thumb"/>
+    </androidx.cardview.widget.CardView>
     <TextView
         android:id="@+id/event_Title"
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
-        android:gravity="center_vertical"
-        android:padding="2dp"
+        android:padding="10dp"
         android:text="Man United vs Newcastle"
+        android:textStyle="bold"
         android:textSize="16sp"
         android:layout_weight="1"/>
-    <ImageButton
+
+    <LinearLayout
         android:layout_width="50dp"
         android:layout_height="match_parent"
-        android:src="@drawable/baseline_navigate_next_24"
-        android:background="#00FFFFFF"/>
+        android:gravity="center">
+        <ImageButton
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/baseline_navigate_next_24"
+            android:background="@drawable/each_event_ic_bg"/>
+    </LinearLayout>
 
 </LinearLayout>

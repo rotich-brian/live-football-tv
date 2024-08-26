@@ -28,4 +28,23 @@
         <item name="android:windowLightStatusBar">true</item>
         <!-- Customize your theme here. -->
     </style>
+
+    <style name="CustomActiveIndicatorStyle">
+        <item name="android:background">@drawable/custom_indicator</item> <!-- Set the color -->
+        <item name="android:height">5dp</item> <!-- Set the height -->
+        <item name="android:width">10dp</item> <!-- Set the width -->
+        <item name="android:layout_gravity">center_horizontal</item> <!-- Center it horizontally -->
+    </style>
+
+    <style name="App.Custom.Indicator" parent="Widget.Material3.BottomNavigationView.ActiveIndicator">
+        <item name="android:color">#6600BCD4</item>
+    </style>
+
+    <style name="BottomNavigationItemStyle" parent="TextAppearance.Material3.LabelLarge">
+        <item name="android:textSize">12sp</item>
+        <item name="android:paddingBottom">4dp</item> <!-- Adjust the space here -->
+        <item name="android:paddingTop">12dp</item>
+        <item name="fontFamily">@font/robotomedium</item>
+    </style>
+
 </resources>

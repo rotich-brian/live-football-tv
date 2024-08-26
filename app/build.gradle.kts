@@ -48,4 +48,5 @@ dependencies {
     androidTestImplementation(libs.espresso.core)
 
     implementation("androidx.swiperefreshlayout:swiperefreshlayout:1.1.0")
+    implementation("de.hdodenhof:circleimageview:3.1.0")
 }
