@@ -6,18 +6,38 @@
     app:startDestination="@id/navigation_home">
 
     <fragment
-        android:id="@+id/navigation_home"
-        android:name="com.bottom.footballtv.ui.home.HomeFragment"
-        android:label="@string/title_home"
-        tools:layout="@layout/fragment_home" />
-    <fragment
-        android:id="@+id/navigation_games"
-        android:name="com.bottom.footballtv.ui.games.GamesFragment"
-        android:label="@string/title_games"
-        tools:layout="@layout/fragment_games" />
-    <fragment
         android:id="@+id/navigation_more"
         android:name="com.bottom.footballtv.ui.more.MoreFragment"
         android:label="@string/title_more"
         tools:layout="@layout/fragment_more" />
+
+
+    <navigation android:id="@+id/navigation_home"
+        app:startDestination="@id/navigation_H">
+        <fragment
+            android:id="@+id/navigation_H"
+            android:name="com.bottom.footballtv.ui.home.HomeFragment"
+            android:label="@string/title_home"
+            tools:layout="@layout/fragment_home">
+            <action
+                android:id="@+id/action_navigation_home_to_naviagtion_events"
+                app:destination="@id/naviagtion_events" />
+        </fragment>
+        <fragment
+            android:id="@+id/naviagtion_events"
+            android:name="com.bottom.footballtv.ui.EventsFragment"
+            android:label="fragment_events"
+            tools:layout="@layout/fragment_events" />
+    </navigation>
+    <navigation android:id="@+id/navigation_games"
+        app:startDestination="@id/navigation_G">
+        <fragment
+            android:id="@+id/navigation_G"
+            android:name="com.bottom.footballtv.ui.games.GamesFragment"
+            android:label="@string/title_games"
+            tools:layout="@layout/fragment_games">
+
+        </fragment>
+    </navigation>
+
 </navigation>

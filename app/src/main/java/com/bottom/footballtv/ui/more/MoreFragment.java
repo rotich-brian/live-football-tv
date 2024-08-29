@@ -9,19 +9,16 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.bottom.footballtv.R;
+import com.bottom.footballtv.databinding.FragmentMoreBinding;
 
 public class MoreFragment extends Fragment {
 
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-
-    }
-
+    private FragmentMoreBinding binding;
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_more, container, false);
+        binding = FragmentMoreBinding.inflate(inflater,container,false);
+
+        return binding.getRoot();
     }
 }

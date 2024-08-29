@@ -4,9 +4,11 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:background="@color/white"
     tools:context=".ui.games.GamesFragment">
 
     <RelativeLayout
+        android:id="@+id/gamesFragmentContainer"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
@@ -36,9 +38,10 @@
                 android:textSize="20sp" />
 
             <ImageButton
+                android:id="@+id/notifyBtn"
                 android:layout_width="50dp"
                 android:layout_height="match_parent"
-                android:src="@drawable/baseline_category_24"
+                android:src="@drawable/baseline_notifications_none_24"
                 android:background="@android:color/transparent"
                 app:tint="@color/black" />
 
@@ -80,7 +83,8 @@
 
                     <androidx.recyclerview.widget.RecyclerView
                         android:id="@+id/recyclerViewCat"
-                        android:layout_width="match_parent"
+                        android:layout_centerHorizontal="true"
+                        android:layout_width="wrap_content"
                         android:layout_height="wrap_content" />
                 </RelativeLayout>
 

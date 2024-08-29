@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "99890037936",
+    "project_id": "live-football-tv-24bfa",
+    "storage_bucket": "live-football-tv-24bfa.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:99890037936:android:9af2de30a7dc206505a775",
+        "android_client_info": {
+          "package_name": "com.bottom.footballtv"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCYcw7sc3jNHpUvxIx_Dcsf7eOtKKqWM1k"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

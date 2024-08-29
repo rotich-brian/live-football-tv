@@ -1,66 +1,125 @@
 package com.bottom.footballtv.ui.home;
 
+import android.content.Intent;
 import android.os.Bundle;
 
+import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
+import androidx.recyclerview.widget.LinearLayoutManager;
 
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
 import com.bottom.footballtv.R;
+import com.bottom.footballtv.adapters.EventAdapter;
+import com.bottom.footballtv.adapters.EventCatAdapter;
+import com.bottom.footballtv.databinding.FragmentHomeBinding;
+import com.bottom.footballtv.models.Event;
+import com.bottom.footballtv.models.Eventcat;
+import com.bottom.footballtv.tools.SelectListener;
+import com.bottom.footballtv.ui.EventsFragment;
+import com.bottom.footballtv.ui.StreamActivity;
+import com.bottom.footballtv.ui.more.NotificationFragment;
 
-/**
- * A simple {@link Fragment} subclass.
- * Use the {@link HomeFragment#newInstance} factory method to
- * create an instance of this fragment.
- */
-public class HomeFragment extends Fragment {
+import java.util.ArrayList;
+import java.util.List;
+import java.util.UUID;
 
-    // TODO: Rename parameter arguments, choose names that match
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-    private static final String ARG_PARAM1 = "param1";
-    private static final String ARG_PARAM2 = "param2";
+public class HomeFragment extends Fragment implements SelectListener {
 
-    // TODO: Rename and change types of parameters
-    private String mParam1;
-    private String mParam2;
+    private List<Eventcat> eventcats;
+    private EventCatAdapter eventCatAdapter;
+    private List<Event> events;
+    private EventAdapter eventAdapter;
 
-    public HomeFragment() {
-        // Required empty public constructor
-    }
-
-    /**
-     * Use this factory method to create a new instance of
-     * this fragment using the provided parameters.
-     *
-     * @param param1 Parameter 1.
-     * @param param2 Parameter 2.
-     * @return A new instance of fragment HomeFragment.
-     */
-    // TODO: Rename and change types and number of parameters
-    public static HomeFragment newInstance(String param1, String param2) {
-        HomeFragment fragment = new HomeFragment();
-        Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, param1);
-        args.putString(ARG_PARAM2, param2);
-        fragment.setArguments(args);
-        return fragment;
-    }
+    private FragmentManager manager;
+    private FragmentHomeBinding binding;
 
     @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
-        }
-    }
-
-    @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_home, container, false);
+        binding = FragmentHomeBinding.inflate(inflater,container,false);
+        manager = getParentFragmentManager();
+
+        if (manager.getBackStackEntryCount() != 0) {
+            manager.popBackStack(null,FragmentManager.POP_BACK_STACK_INCLUSIVE);
+        }
+
+        events = new ArrayList<>();
+
+        eventcats = new ArrayList<>();
+
+        // Generate 5 Eventcat items
+        for (int i = 0; i < 5; i++) {
+            Eventcat eventcat = new Eventcat();
+            eventcat.setCatId(UUID.randomUUID().toString());
+            eventcat.setCategory("England - Premier League " + (i + 1));
+            eventcat.setThumbnail("https://example.com/thumbnail_cat" + (i + 1) + ".jpg");
+
+            // Add the eventcat to the eventcats list
+            eventcats.add(eventcat);
+        }
+
+        binding.recyclerViewCat.setLayoutManager(new LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL,false));
+        eventCatAdapter = new EventCatAdapter(eventcats, requireContext(), "", this);
+        binding.recyclerViewCat.setAdapter(eventCatAdapter);
+
+        // Generate 5 event items
+        for (int i = 0; i < 10; i++) {
+            Event event = new Event();
+            event.setEventId(UUID.randomUUID().toString());
+            event.setMatch("Match " + (i + 1) + ": Team A vs Team B");
+            event.setCategory("Category " + (i + 1));
+            event.setThumbnail("https://example.com/thumbnail" + (i + 1) + ".jpg");
+            event.setLink1("https://example.com/link1_" + (i + 1));
+            event.setLink2("https://example.com/link2_" + (i + 1));
+            event.setLink3("https://example.com/link3_" + (i + 1));
+            event.setOrigin("https://example.com");
+            event.setReferrer("https://referrer.com");
+            event.setUser_Agent("Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.3");
+
+            // Add the event to the events list
+            events.add(event);
+        }
+
+        binding.recyclerViewTop.setLayoutManager(new LinearLayoutManager(requireContext(),LinearLayoutManager.VERTICAL,false));
+        eventAdapter = new EventAdapter(events,requireContext(),this);
+        binding.recyclerViewTop.setAdapter(eventAdapter);
+
+        binding.notifyBtn.setOnClickListener(view -> openNotificationFragment());
+
+        return binding.getRoot();
+    }
+
+    @Override
+    public void onCatItemClick(Eventcat eventcat) {
+        openEventsFragment();
+    }
+
+    @Override
+    public void onEventClick(Event event) {
+        openStream();
+    }
+
+    private void openEventsFragment() {
+        FragmentTransaction transaction = manager.beginTransaction();
+        transaction.replace(R.id.homeFragmentContainer, new EventsFragment());
+        transaction.addToBackStack("events"); // Optional: to allow going back
+        transaction.commit();
+    }
+
+    private void openNotificationFragment() {
+        FragmentTransaction transaction = manager.beginTransaction();
+        transaction.replace(R.id.homeFragmentContainer, new NotificationFragment());
+        transaction.addToBackStack("notification"); // Optional: to allow going back
+        transaction.commit();
+    }
+
+    private void openStream() {
+        Intent intent = new Intent(requireContext(), StreamActivity.class);
+        requireContext().startActivity(intent);
     }
 }
