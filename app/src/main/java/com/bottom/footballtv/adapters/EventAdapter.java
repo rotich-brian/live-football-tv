@@ -48,7 +48,7 @@ public class EventAdapter extends RecyclerView.Adapter<EventAdapter.ViewHolder> 
         try {
             Picasso.get()
                     .load(event.getThumbnail())
-                    .resize(50, 50)
+                    .resize(512, 512)
                     .centerCrop()
                     .placeholder(R.drawable.sample_thumb)
                     .into(holder.thumbnailArt);

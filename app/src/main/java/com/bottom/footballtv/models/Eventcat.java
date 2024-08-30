@@ -1,6 +1,8 @@
 package com.bottom.footballtv.models;
 
-public class Eventcat {
+import java.io.Serializable;
+
+public class Eventcat implements Serializable {
     private String CatId;
     private String Category;
     private String Thumbnail;

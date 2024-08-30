@@ -1,6 +1,8 @@
 package com.bottom.footballtv.models;
 
-public class Event {
+import java.io.Serializable;
+
+public class Event implements Serializable {
     private String EventId;
     private String Match;
     private String Category;

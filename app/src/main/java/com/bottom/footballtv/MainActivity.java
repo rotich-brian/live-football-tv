@@ -95,12 +95,10 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
-        if (activeFragment instanceof HomeFragment) {
-            // If the active fragment is HomeFragment, perform the default back action
-            super.onBackPressed();
-        } else {
-            // If the active fragment is not HomeFragment, navigate back to HomeFragment
+        if (activeFragment instanceof MoreFragment) {
             binding.navView.setSelectedItemId(R.id.navigation_home);
+        } else {
+            super.onBackPressed();
         }
     }
 }

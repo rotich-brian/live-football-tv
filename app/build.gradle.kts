@@ -55,6 +55,9 @@ dependencies {
 
     implementation(platform("com.google.firebase:firebase-bom:33.2.0"))
     implementation("com.google.firebase:firebase-analytics")
+    // Import the BoM for the Firebase platform
+    implementation(platform("com.google.firebase:firebase-bom:33.2.0"))
+    implementation("com.google.firebase:firebase-firestore")
 
     implementation("com.google.android.exoplayer:exoplayer:2.15.1")
     implementation("com.google.android.exoplayer:exoplayer-ui:2.15.1")

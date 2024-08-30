@@ -4,11 +4,15 @@ import android.content.Intent;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
+import android.os.Handler;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -23,18 +27,24 @@ import com.bottom.footballtv.tools.SelectListener;
 import com.bottom.footballtv.ui.EventsFragment;
 import com.bottom.footballtv.ui.StreamActivity;
 import com.bottom.footballtv.ui.more.NotificationFragment;
+import com.google.firebase.firestore.EventListener;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.FirebaseFirestoreException;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
+import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
 
 public class HomeFragment extends Fragment implements SelectListener {
+    private static final String TAG = "HOME_FRAGMENT_TAG";
 
     private List<Eventcat> eventcats;
     private EventCatAdapter eventCatAdapter;
     private List<Event> events;
     private EventAdapter eventAdapter;
 
+    private FirebaseFirestore db;
     private FragmentManager manager;
     private FragmentHomeBinding binding;
 
@@ -48,65 +58,146 @@ public class HomeFragment extends Fragment implements SelectListener {
             manager.popBackStack(null,FragmentManager.POP_BACK_STACK_INCLUSIVE);
         }
 
-        events = new ArrayList<>();
+        db = FirebaseFirestore.getInstance();
 
-        eventcats = new ArrayList<>();
-
-        // Generate 5 Eventcat items
-        for (int i = 0; i < 5; i++) {
-            Eventcat eventcat = new Eventcat();
-            eventcat.setCatId(UUID.randomUUID().toString());
-            eventcat.setCategory("England - Premier League " + (i + 1));
-            eventcat.setThumbnail("https://example.com/thumbnail_cat" + (i + 1) + ".jpg");
-
-            // Add the eventcat to the eventcats list
-            eventcats.add(eventcat);
-        }
+        setTopCatData();
 
         binding.recyclerViewCat.setLayoutManager(new LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL,false));
         eventCatAdapter = new EventCatAdapter(eventcats, requireContext(), "", this);
         binding.recyclerViewCat.setAdapter(eventCatAdapter);
 
-        // Generate 5 event items
-        for (int i = 0; i < 10; i++) {
-            Event event = new Event();
-            event.setEventId(UUID.randomUUID().toString());
-            event.setMatch("Match " + (i + 1) + ": Team A vs Team B");
-            event.setCategory("Category " + (i + 1));
-            event.setThumbnail("https://example.com/thumbnail" + (i + 1) + ".jpg");
-            event.setLink1("https://example.com/link1_" + (i + 1));
-            event.setLink2("https://example.com/link2_" + (i + 1));
-            event.setLink3("https://example.com/link3_" + (i + 1));
-            event.setOrigin("https://example.com");
-            event.setReferrer("https://referrer.com");
-            event.setUser_Agent("Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.3");
-
-            // Add the event to the events list
-            events.add(event);
-        }
-
         binding.recyclerViewTop.setLayoutManager(new LinearLayoutManager(requireContext(),LinearLayoutManager.VERTICAL,false));
         eventAdapter = new EventAdapter(events,requireContext(),this);
         binding.recyclerViewTop.setAdapter(eventAdapter);
+
+        binding.swipeRefresh.setRefreshing(false);
+        binding.swipeRefresh.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                new Handler().postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        binding.swipeRefresh.setRefreshing(false);
+                    }
+                },2000);
+            }
+        });
 
         binding.notifyBtn.setOnClickListener(view -> openNotificationFragment());
 
         return binding.getRoot();
     }
 
+    private void setTopCatData() {
+
+        eventcats = new ArrayList<>();
+        events = new ArrayList<>();
+
+        db.collection("eventcat")
+                .addSnapshotListener(new EventListener<QuerySnapshot>() {
+                    @Override
+                    public void onEvent(@Nullable QuerySnapshot value,
+                                        @Nullable FirebaseFirestoreException e) {
+                        if (e != null) {
+                            Log.w(TAG, "Listen failed.", e);
+                            return;
+                        }
+
+                        // Clear the list before adding new data
+                        eventcats.clear();
+
+                        if (value != null) {
+                            for (QueryDocumentSnapshot doc : value) {
+                                Eventcat eventcat = new Eventcat();
+                                eventcat.setCatId(doc.getId());
+                                eventcat.setCategory(doc.getString("competition"));
+                                eventcat.setThumbnail(doc.getString("thumbnail"));
+
+                                eventcats.add(eventcat);
+                            }
+
+                            // Notify the adapter once after processing all documents
+                            eventCatAdapter.notifyDataSetChanged();
+
+                            setTopEventData();
+                            Log.d(TAG, "Category Events: " + eventcats);
+                        }
+                    }
+                });
+    }
+
+    private void setTopEventData() {
+        events.clear();
+
+        for (Eventcat eventcat : eventcats) {
+            String catId = eventcat.getCatId();
+            String category = eventcat.getCategory();
+
+            db.collection("eventcat")
+                    .document(catId)
+                    .collection(category)
+                    .addSnapshotListener(new EventListener<QuerySnapshot>() {
+                        @Override
+                        public void onEvent(@Nullable QuerySnapshot value,
+                                            @Nullable FirebaseFirestoreException e) {
+                            if (e != null) {
+                                Log.w(TAG, "Listen failed.", e);
+                                return;
+                            }
+
+                            if (value != null) {
+                                // Create a temporary list to hold the events for this category
+                                List<Event> tempEvents = new ArrayList<>();
+
+                                for (QueryDocumentSnapshot doc : value) {
+                                    Event event = new Event();
+                                    event.setEventId(doc.getId());
+                                    event.setMatch(doc.getString("match"));
+                                    event.setThumbnail(doc.getString("thumbnail"));
+                                    event.setLink1(doc.getString("stream"));
+                                    event.setOrigin(doc.getString("origin"));
+                                    event.setReferrer(doc.getString("referer"));
+                                    event.setUser_Agent(doc.getString("user-agent"));
+
+                                    // Check if 'top' field is true
+                                    Boolean top = doc.getBoolean("top");
+                                    if (top != null && top) {
+                                        tempEvents.add(event);
+                                    }
+                                }
+
+                                // Update the events list and notify adapter
+//                                events.clear();
+                                events.addAll(tempEvents);
+                                eventAdapter.notifyDataSetChanged();
+                                Log.d(TAG, "Category Events: " + events);
+                            }
+                        }
+                    });
+        }
+    }
+
     @Override
     public void onCatItemClick(Eventcat eventcat) {
-        openEventsFragment();
+        openEventsFragment(eventcat);
     }
 
     @Override
     public void onEventClick(Event event) {
-        openStream();
+        openStream(event);
     }
 
-    private void openEventsFragment() {
+    private void openEventsFragment(Eventcat eventcat) {
+
+        // Create a new instance of the destination fragment
+        Bundle bundle = new Bundle();
+        bundle.putSerializable("eventcat", eventcat); // Use putParcelable if using Parcelable
+
+        Fragment destinationFragment = new EventsFragment();
+        destinationFragment.setArguments(bundle);
+
         FragmentTransaction transaction = manager.beginTransaction();
-        transaction.replace(R.id.homeFragmentContainer, new EventsFragment());
+        transaction.replace(R.id.homeFragmentContainer, destinationFragment);
         transaction.addToBackStack("events"); // Optional: to allow going back
         transaction.commit();
     }
@@ -118,8 +209,9 @@ public class HomeFragment extends Fragment implements SelectListener {
         transaction.commit();
     }
 
-    private void openStream() {
+    private void openStream(Event event) {
         Intent intent = new Intent(requireContext(), StreamActivity.class);
+        intent.putExtra("event",event);
         requireContext().startActivity(intent);
     }
 }

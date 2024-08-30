@@ -2,6 +2,7 @@ package com.bottom.footballtv.ui;
 
 import android.content.pm.ActivityInfo;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
@@ -15,6 +16,7 @@ import androidx.core.view.WindowInsetsCompat;
 
 import com.bottom.footballtv.R;
 import com.bottom.footballtv.databinding.ActivityStreamBinding;
+import com.bottom.footballtv.models.Event;
 import com.bottom.footballtv.tools.CustomHttpDataSourceFactory;
 import com.google.android.exoplayer2.ExoPlayer;
 import com.google.android.exoplayer2.MediaItem;
@@ -25,12 +27,18 @@ import com.google.android.exoplayer2.ui.PlayerView;
 import com.google.android.exoplayer2.upstream.HttpDataSource;
 
 public class StreamActivity extends AppCompatActivity {
+    private static final String TAG = "STREAM_ACTIVITY_TAG";
 
     private PlayerView playerView;
     private ExoPlayer player;
     private ProgressBar progressBar;
     private ImageView fullScreen;
     boolean isFullScreen = false;
+
+    private String userAgent ="Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/104.0.0.0 Safari/537.36";
+    private String referer ="https://quest4play.xyz/";
+    private String origin ="https://quest4play.xyz";
+    private String hlsUrl = "//";
 
     private ActivityStreamBinding binding;
 
@@ -47,11 +55,28 @@ public class StreamActivity extends AppCompatActivity {
             return insets;
         });
 
+        Event event = (Event) getIntent().getSerializableExtra("event");
+
+        if (event != null) {
+            // Use the Eventcat object as needed
+            Log.d(TAG, "Eventcat received: " + event.getCategory());
+            Log.d(TAG, "Eventcat received: " + event.getReferrer());
+
+            referer = event.getReferrer();
+            origin = event.getOrigin();
+            userAgent = event.getUser_Agent();
+
+            if (event.getLink1() != null)
+                hlsUrl = event.getLink1();
+
+        } else {
+            Log.d(TAG, "No Eventcat data received.");
+        }
+
         playerView = binding.playerView;
         progressBar = binding.progressbar;
         fullScreen = playerView.findViewById(R.id.exo_fullscreen_icon);
 
-        String hlsUrl = "https://ddy1.mizhls.ru/ddy1/premium38/playlist.m3u8";
         playStream(hlsUrl);
 
         fullScreen.setOnClickListener(new View.OnClickListener() {
@@ -99,10 +124,6 @@ public class StreamActivity extends AppCompatActivity {
     public void playStream(String live_url){
         player = new SimpleExoPlayer.Builder(this).build();
         playerView.setPlayer(player);
-
-        String userAgent ="Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/104.0.0.0 Safari/537.36";
-        String referer ="https://quest4play.xyz/";
-        String origin ="https://quest4play.xyz";
 
         HttpDataSource.Factory dataSourceFactory = new CustomHttpDataSourceFactory(userAgent, referer, origin);
 
