@@ -1,5 +1,6 @@
 package com.bottom.footballtv.ui;
 
+import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.os.Bundle;
 
@@ -16,6 +17,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.bottom.footballtv.R;
 import com.bottom.footballtv.adapters.EventAdapter;
 import com.bottom.footballtv.databinding.FragmentEventsBinding;
 import com.bottom.footballtv.models.Event;
@@ -26,9 +28,11 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
+import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 public class EventsFragment extends Fragment implements SelectListener {
     private static final String TAG = "EVENT_FRAGMENT_TAG";
@@ -39,10 +43,12 @@ public class EventsFragment extends Fragment implements SelectListener {
 
     private OnBackPressedCallback callback;
     private FragmentEventsBinding binding;
+    @SuppressLint("ResourceAsColor")
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         binding = FragmentEventsBinding.inflate(inflater,container,false);
+//        binding.getRoot().setBackgroundColor(R.color.white);
 
         events = new ArrayList<>();
         db = FirebaseFirestore.getInstance();
@@ -53,6 +59,17 @@ public class EventsFragment extends Fragment implements SelectListener {
             setTopEventData(eventcat);
 
             binding.catTitle.setText(eventcat.getCategory());
+
+            try {
+                Picasso.get()
+                        .load(eventcat.getThumbnail())
+                        .resize(150, 150)
+                        .centerCrop()
+                        .placeholder(R.mipmap.ic_launcher)
+                        .into(binding.catThumb);
+            } catch (Exception e){
+                binding.catThumb.setImageResource(R.mipmap.ic_launcher);
+            }
 
             Log.d(TAG, "onCreateView: eventcat"+ eventcat);
         }
@@ -96,10 +113,8 @@ public class EventsFragment extends Fragment implements SelectListener {
                         }
 
                         if (value != null) {
-
-//                            events.clear();
-                            // Create a temporary list to hold the events for this category
-                            List<Event> tempEvents = new ArrayList<>();
+                            // Clear existing events
+                            events.clear();
 
                             for (QueryDocumentSnapshot doc : value) {
                                 Event event = new Event();
@@ -111,12 +126,10 @@ public class EventsFragment extends Fragment implements SelectListener {
                                 event.setReferrer(doc.getString("referer"));
                                 event.setUser_Agent(doc.getString("user-agent"));
 
-                                tempEvents.add(event);
+                                events.add(event);
                             }
 
-                            // Update the events list and notify adapter
-//                                events.clear();
-                            events.addAll(tempEvents);
+                            // Notify adapter to update the UI
                             eventAdapter.notifyDataSetChanged();
                             Log.d(TAG, "Category Events: " + events);
                         }

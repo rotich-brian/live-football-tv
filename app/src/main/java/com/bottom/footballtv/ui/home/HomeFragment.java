@@ -88,7 +88,7 @@ public class HomeFragment extends Fragment implements SelectListener {
         return binding.getRoot();
     }
 
-    private void setTopCatData() {
+    private void setTop1CatData() {
 
         eventcats = new ArrayList<>();
         events = new ArrayList<>();
@@ -176,6 +176,94 @@ public class HomeFragment extends Fragment implements SelectListener {
                     });
         }
     }
+
+    private void setTopCatData() {
+        eventcats = new ArrayList<>();
+        events = new ArrayList<>();
+
+        db.collection("eventcat")
+                .addSnapshotListener(new EventListener<QuerySnapshot>() {
+                    @Override
+                    public void onEvent(@Nullable QuerySnapshot value,
+                                        @Nullable FirebaseFirestoreException e) {
+                        if (e != null) {
+                            Log.w(TAG, "Listen failed.", e);
+                            return;
+                        }
+
+                        // Clear the list before adding new data
+                        eventcats.clear();
+
+                        if (value != null) {
+                            for (QueryDocumentSnapshot doc : value) {
+                                Eventcat eventcat = new Eventcat();
+                                eventcat.setCatId(doc.getId());
+                                eventcat.setCategory(doc.getString("competition"));
+                                eventcat.setThumbnail(doc.getString("thumbnail"));
+
+                                eventcats.add(eventcat);
+                            }
+
+                            // Notify the adapter once after processing all documents
+                            eventCatAdapter.notifyDataSetChanged();
+
+                            // Start fetching events for categories
+                            fetchEventsForCategories();
+                            Log.d(TAG, "Category Events: " + eventcats);
+                        }
+                    }
+                });
+    }
+
+    private void fetchEventsForCategories() {
+        // Clear events list before adding new data
+        events.clear();
+
+        for (Eventcat eventcat : eventcats) {
+            String catId = eventcat.getCatId();
+            String category = eventcat.getCategory();
+
+            db.collection("eventcat")
+                    .document(catId)
+                    .collection(category)
+                    .addSnapshotListener(new EventListener<QuerySnapshot>() {
+                        @Override
+                        public void onEvent(@Nullable QuerySnapshot value,
+                                            @Nullable FirebaseFirestoreException e) {
+                            if (e != null) {
+                                Log.w(TAG, "Listen failed.", e);
+                                return;
+                            }
+
+                            if (value != null) {
+                                List<Event> tempEvents = new ArrayList<>();
+
+                                for (QueryDocumentSnapshot doc : value) {
+                                    Event event = new Event();
+                                    event.setEventId(doc.getId());
+                                    event.setMatch(doc.getString("match"));
+                                    event.setThumbnail(doc.getString("thumbnail"));
+                                    event.setLink1(doc.getString("stream"));
+                                    event.setOrigin(doc.getString("origin"));
+                                    event.setReferrer(doc.getString("referer"));
+                                    event.setUser_Agent(doc.getString("user-agent"));
+
+                                    Boolean top = doc.getBoolean("top");
+                                    if (top != null && top) {
+                                        tempEvents.add(event);
+                                    }
+                                }
+
+                                // Update the events list and notify adapter
+                                events.addAll(tempEvents);
+                                eventAdapter.notifyDataSetChanged();
+                                Log.d(TAG, "Category Events: " + events);
+                            }
+                        }
+                    });
+        }
+    }
+
 
     @Override
     public void onCatItemClick(Eventcat eventcat) {

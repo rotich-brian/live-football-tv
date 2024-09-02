@@ -54,7 +54,7 @@ public class EventCatAdapter extends RecyclerView.Adapter<EventCatAdapter.ViewHo
         try {
             Picasso.get()
                     .load(eventcat.getThumbnail())
-                    .resize(512, 512)
+                    .resize(150, 150)
                     .centerCrop()
                     .placeholder(R.drawable.place_holder)
                     .into(holder.catThumb);

@@ -1,7 +1,6 @@
 package com.bottom.footballtv.adapters;
 
 import android.content.Context;
-import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,7 +13,6 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.bottom.footballtv.R;
 import com.bottom.footballtv.models.Event;
 import com.bottom.footballtv.tools.SelectListener;
-import com.bottom.footballtv.ui.StreamActivity;
 import com.squareup.picasso.Picasso;
 
 import java.util.List;
@@ -48,9 +46,9 @@ public class EventAdapter extends RecyclerView.Adapter<EventAdapter.ViewHolder> 
         try {
             Picasso.get()
                     .load(event.getThumbnail())
-                    .resize(512, 512)
+                    .resize(150, 150)
                     .centerCrop()
-                    .placeholder(R.drawable.sample_thumb)
+                    .placeholder(R.drawable.place_holder)
                     .into(holder.thumbnailArt);
         } catch (Exception e){
             holder.thumbnailArt.setImageResource(R.drawable.place_holder);
