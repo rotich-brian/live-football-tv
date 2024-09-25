@@ -50,6 +50,17 @@
                 android:src="@drawable/baseline_navigate_next_24"
                 android:background="@drawable/each_event_ic_bg"
                 app:tint="@color/white" />
+
+            <TextView
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:background="@drawable/new_notify_bg"
+                android:visibility="gone"
+                android:text="HD"
+                android:textSize="18sp"
+                android:textColor="#FF0000"
+                android:gravity="center"
+                android:textStyle="bold"/>
         </LinearLayout>
 
     </LinearLayout>

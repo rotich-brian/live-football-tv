@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".NewUpdateActivity">
+
+    <RelativeLayout
+        android:id="@+id/loading_progress_bar"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@drawable/white_circle_bg"
+        android:visibility="gone"
+        android:elevation="8dp"
+        android:padding="20dp"
+        android:layout_marginBottom="20dp"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true">
+
+        <ProgressBar
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:layout_centerInParent="true"
+            android:indeterminateTint="@color/black"/>
+    </RelativeLayout>
+
+    <LinearLayout
+        android:id="@+id/big5L"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:orientation="horizontal">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:padding="10dp"
+            android:text="Live \nFootball TV"
+            android:fontFamily="@font/robotomedium"
+            android:textStyle="bold"
+            android:textColor="@color/black"
+            android:textSize="24sp" />
+
+        <ImageButton
+            android:layout_width="50dp"
+            android:layout_height="match_parent"
+            android:src="@drawable/baseline_category_24"
+            android:background="@android:color/transparent"
+            app:tint="@color/black" />
+    </LinearLayout>
+
+    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="16dp"
+        android:layout_centerInParent="true"
+        android:background="@android:color/white"
+        android:layout_gravity="center"
+        tools:context=".NewUpdateActivity">
+
+        <TextView
+            android:id="@+id/update_message"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="New Update Available!"
+            android:layout_gravity="center"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            android:textColor="@color/black"
+            android:layout_marginBottom="8dp"/>
+
+        <TextView
+            android:id="@+id/update_description"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="A new version of the app is available with new Streaming UI &amp; bug fixes. Download now."
+            android:textSize="16sp"
+            android:layout_marginBottom="16dp"/>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="end">
+
+            <Button
+                android:id="@+id/update_button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Update App"
+                android:backgroundTint="@color/black"/>
+
+            <Button
+                android:id="@+id/later_button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Later"
+                android:visibility="gone"
+                android:textAllCaps="false"
+                android:textColor="@color/black"
+                android:backgroundTint="@color/white"
+                android:layout_marginStart="8dp"/>
+        </LinearLayout>
+    </LinearLayout>
+
+
+</RelativeLayout>

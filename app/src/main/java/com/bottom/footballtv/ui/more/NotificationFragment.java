@@ -1,15 +1,21 @@
 package com.bottom.footballtv.ui.more;
 
+import android.content.Intent;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
+import android.os.Handler;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.bottom.footballtv.MainActivity;
+import com.bottom.footballtv.NewUpdateActivity;
 import com.bottom.footballtv.R;
+import com.bottom.footballtv.SplashActivity;
 import com.bottom.footballtv.databinding.FragmentNotificationBinding;
 
 public class NotificationFragment extends Fragment {
@@ -25,6 +31,31 @@ public class NotificationFragment extends Fragment {
             public void onClick(View view) {
                 FragmentManager manager = getFragmentManager();
                 manager.popBackStackImmediate();
+            }
+        });
+
+        binding.swipeRefresh.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                new Handler().postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        binding.swipeRefresh.setRefreshing(false);
+                    }
+                },2000);
+            }
+        });
+
+        if (MainActivity.newUpdate){
+            binding.newUpdateCard.setVisibility(View.VISIBLE);
+        }
+
+        binding.newUpdateCard.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(requireContext(), NewUpdateActivity.class);
+                intent.putExtra("appData",MainActivity.appDataM);
+                requireActivity().startActivity(intent);
             }
         });
 

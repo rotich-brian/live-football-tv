@@ -33,7 +33,9 @@
         android:id="@+id/cat_Thumb"
         android:layout_width="100dp"
         android:layout_height="100dp"
-        android:src="@drawable/place_holder"
+        android:padding="1dp"
+        android:src="@mipmap/ic_launcher_round"
+        android:background="@drawable/cat_thumb_bg"
         android:layout_centerHorizontal="true"
         android:layout_alignParentTop="true"/>
 

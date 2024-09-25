@@ -37,14 +37,37 @@
                 android:textColor="@color/black"
                 android:textSize="20sp" />
 
-            <ImageButton
-                android:id="@+id/notifyBtn"
+            <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="50dp"
-                android:layout_height="match_parent"
-                android:src="@drawable/baseline_notifications_none_24"
-                android:background="@android:color/transparent"
-                android:layout_marginEnd="5dp"
-                app:tint="@color/black" />
+                android:layout_height="match_parent">
+
+                <ImageButton
+                    android:id="@+id/notifyBtn"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    android:src="@drawable/baseline_notifications_none_24"
+                    android:background="@android:color/transparent"
+                    android:layout_marginEnd="5dp"
+                    app:tint="@color/black" />
+
+                <TextView
+                    android:id="@+id/notifyDot"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    app:layout_constraintEnd_toEndOf="@id/notifyBtn"
+                    app:layout_constraintTop_toTopOf="@id/notifyBtn"
+                    android:paddingTop="0dp"
+                    android:paddingEnd="0dp"
+                    android:text="•"
+                    android:visibility="gone"
+                    android:textSize="23sp"
+                    android:textStyle="bold"
+                    android:textColor="#F30606"/>
+            </androidx.constraintlayout.widget.ConstraintLayout>
 
         </LinearLayout>
 
@@ -57,11 +80,11 @@
             android:paddingHorizontal="5dp">
 
             <androidx.appcompat.widget.SearchView
-                android:layout_width="wrap_content"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_margin="10dp"
                 android:layout_weight="1"
-                android:hint="Seach here"
+                app:defaultQueryHint="Search Game"
                 app:iconifiedByDefault="false"
                 android:background="@drawable/searchview_bg"
                 app:queryBackground="@android:color/transparent" />

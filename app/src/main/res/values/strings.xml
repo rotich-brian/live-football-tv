@@ -5,5 +5,18 @@
     <string name="title_more">More</string>
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
-    <string name="loading">LOADING...</string>
+    <string name="loading">LOADING…</string>
+
+    <string name="App_Id">ca-app-pub-9772010006756690~5107600520</string>
+<!--    <string name="BannerAdId">ca-app-pub-9772010006756690/3774144036</string>-->
+<!--    <string name="InterstitialAdId">ca-app-pub-9772010006756690/9695159322</string>-->
+
+    <string name="BannerAdId">ca-app-pub-3940256099942544/9214589741-k</string>
+    <string name="InterstitialAdId">ca-app-pub-3940256099942544/1033173712-k</string>
+
+    <string name="app_Version">2.0</string>
+    <string name="update_available">Update Available</string>
+    <string name="update_message">A new version of the app is available. Please update to continue using the app.</string>
+    <string name="update_now">Update App</string>
+    <string name="update_later">Later</string>
 </resources>

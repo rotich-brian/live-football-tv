@@ -1,5 +1,6 @@
 package com.bottom.footballtv.adapters;
 
+import android.app.Activity;
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -10,22 +11,26 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.bottom.footballtv.MainActivity;
 import com.bottom.footballtv.R;
-import com.bottom.footballtv.models.Event;
-import com.bottom.footballtv.tools.SelectListener;
+import com.bottom.footballtv.models.Room.Event;
+import com.bottom.footballtv.services.InterstitialAdService;
+import com.bottom.footballtv.services.SelectListener;
 import com.squareup.picasso.Picasso;
 
 import java.util.List;
 
 public class EventAdapter extends RecyclerView.Adapter<EventAdapter.ViewHolder> {
 
-    private List<Event> eventList;
+    private List<com.bottom.footballtv.models.Room.Event> eventList;
     private Context context;
+    private Activity activity;
     private SelectListener listener;
 
-    public EventAdapter(List<Event> eventList, Context context, SelectListener listener) {
+    public EventAdapter(List<com.bottom.footballtv.models.Room.Event> eventList, Context context, Activity activity, SelectListener listener) {
         this.eventList = eventList;
         this.context = context;
+        this.activity = activity;
         this.listener = listener;
     }
 
@@ -39,7 +44,7 @@ public class EventAdapter extends RecyclerView.Adapter<EventAdapter.ViewHolder> 
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
-        Event event = eventList.get(position);
+        com.bottom.footballtv.models.Room.Event event = eventList.get(position);
 
         holder.matchNam.setText(event.getMatch());
 
@@ -57,7 +62,23 @@ public class EventAdapter extends RecyclerView.Adapter<EventAdapter.ViewHolder> 
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                listener.onEventClick(event);
+
+                MainActivity.AdClick +=1;
+                if (MainActivity.AdClick % 2 == 0) {
+                    InterstitialAdService.showInterstitialAd(context, activity, context.getResources().getString(R.string.InterstitialAdId), new InterstitialAdService.ShowInterstitialAd() {
+                        @Override
+                        public void onAdDismissed() {
+                            listener.onEventClick(event);
+                        }
+
+                        @Override
+                        public void onAdNull() {
+                            listener.onEventClick(event);
+                        }
+                    });
+                } else {
+                    listener.onEventClick(event);
+                }
             }
         });
     }
@@ -67,7 +88,12 @@ public class EventAdapter extends RecyclerView.Adapter<EventAdapter.ViewHolder> 
         return eventList.size();
     }
 
-    public class ViewHolder extends RecyclerView.ViewHolder{
+    public void updateEvents(List<Event> events) {
+        this.eventList = events;
+        notifyDataSetChanged();
+    }
+
+    static class ViewHolder extends RecyclerView.ViewHolder{
 
         ImageView thumbnailArt;
         TextView matchNam;

@@ -2,32 +2,28 @@ package com.bottom.footballtv.ui.games;
 
 import android.os.Bundle;
 
-import androidx.annotation.Nullable;
+import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.GridLayoutManager;
-import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
-import android.os.Handler;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.bottom.footballtv.MainActivity;
 import com.bottom.footballtv.R;
 import com.bottom.footballtv.adapters.EventCatAdapter;
 import com.bottom.footballtv.databinding.FragmentGamesBinding;
-import com.bottom.footballtv.models.Event;
-import com.bottom.footballtv.models.Eventcat;
-import com.bottom.footballtv.tools.SelectListener;
+import com.bottom.footballtv.models.Room.Event;
+import com.bottom.footballtv.models.Room.Eventcat;
+import com.bottom.footballtv.services.SelectListener;
 import com.bottom.footballtv.ui.EventsFragment;
 import com.bottom.footballtv.ui.more.NotificationFragment;
-import com.google.firebase.firestore.EventListener;
+import com.bottom.footballtv.ui.viewmodel.EventViewModel;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.FirebaseFirestoreException;
-import com.google.firebase.firestore.QueryDocumentSnapshot;
-import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -38,82 +34,61 @@ public class GamesFragment extends Fragment implements SelectListener {
     private List<Eventcat> eventcats;
     private EventCatAdapter eventCatAdapter;
 
+    private EventViewModel eventViewModel;
+
     private FirebaseFirestore db;
     private FragmentManager manager;
     private FragmentGamesBinding binding;
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
        binding = FragmentGamesBinding.inflate(inflater,container,false);
 
         manager = getParentFragmentManager();
-
         if (manager.getBackStackEntryCount() != 0) {
             manager.popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
         }
 
-        db = FirebaseFirestore.getInstance();
-        eventcats = new ArrayList<>();
-        setCatData();
+        eventViewModel = new ViewModelProvider(this).get(EventViewModel.class);
 
-        binding.recyclerViewCat.setLayoutManager(new GridLayoutManager(requireContext(),2));
-        eventCatAdapter = new EventCatAdapter(eventcats, requireContext(), "games", this);
-        binding.recyclerViewCat.setAdapter(eventCatAdapter);
+        setupRecyclerViews();
+        observeViewModelData();
+        setListeners();
 
-        binding.swipeRefresh.setRefreshing(false);
-        binding.swipeRefresh.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
-            @Override
-            public void onRefresh() {
-                new Handler().postDelayed(new Runnable() {
-                    @Override
-                    public void run() {
-                        binding.swipeRefresh.setRefreshing(false);
-                    }
-                },2000);
-            }
-        });
-
-        binding.notifyBtn.setOnClickListener(view -> openNotificationFragment());
+        eventViewModel.listenForEventCategories();
 
        return binding.getRoot();
     }
 
-    private void setCatData() {
+    private void setupRecyclerViews() {
 
-        db.collection("eventcat")
-                .addSnapshotListener(new EventListener<QuerySnapshot>() {
-                    @Override
-                    public void onEvent(@Nullable QuerySnapshot value,
-                                        @Nullable FirebaseFirestoreException e) {
-                        if (e != null) {
-                            Log.w(TAG, "Listen failed.", e);
-                            return;
-                        }
+        binding.recyclerViewCat.setLayoutManager(new GridLayoutManager(requireContext(),2));
+        eventCatAdapter = new EventCatAdapter(new ArrayList<>(), requireContext(),requireActivity(), "games", this);
+        binding.recyclerViewCat.setAdapter(eventCatAdapter);
+    }
 
-                        // Clear the list before adding new data
-                        eventcats.clear();
+    private void observeViewModelData() {
+        eventViewModel.getEventCategories().observe(getViewLifecycleOwner(), eventcats -> {
+            eventCatAdapter.updateEventCategories(eventcats); // Update the adapter
+        });
+    }
 
-                        if (value != null) {
-                            for (QueryDocumentSnapshot doc : value) {
-                                Eventcat eventcat = new Eventcat();
-                                eventcat.setCatId(doc.getId());
-                                eventcat.setCategory(doc.getString("competition"));
-                                eventcat.setThumbnail(doc.getString("thumbnail"));
+    private void setListeners() {
+        binding.swipeRefresh.setOnRefreshListener(() -> {
+            // Re-listen for real-time updates
+            eventViewModel.listenForEventCategories();
+            binding.swipeRefresh.setRefreshing(false);
+        });
 
-                                eventcats.add(eventcat);
-                            }
+        binding.notifyBtn.setOnClickListener(view -> openNotificationFragment());
 
-                            // Notify the adapter once after processing all documents
-                            eventCatAdapter.notifyDataSetChanged();
-
-                            Log.d(TAG, "Category Events: " + eventcats);
-                        }
-                    }
-                });
+        if (MainActivity.newUpdate){
+            binding.notifyDot.setVisibility(View.VISIBLE);
+        }
     }
 
     @Override
-    public void onCatItemClick(Eventcat eventcat) {
+    public void onCatItemClick(com.bottom.footballtv.models.Room.Eventcat eventcat) {
         openEventsFragment(eventcat);
     }
 
@@ -122,7 +97,7 @@ public class GamesFragment extends Fragment implements SelectListener {
 
     }
 
-    private void openEventsFragment(Eventcat eventcat) {
+    private void openEventsFragment(com.bottom.footballtv.models.Room.Eventcat eventcat) {
         // Create a new instance of the destination fragment
         Bundle bundle = new Bundle();
         bundle.putSerializable("eventcat", eventcat); // Use putParcelable if using Parcelable

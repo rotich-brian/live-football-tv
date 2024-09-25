@@ -4,6 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_gravity="bottom"
+    android:paddingBottom="10dp"
     android:layoutDirection="ltr"
     android:background="#CC000000"
     android:orientation="vertical"
@@ -24,7 +25,7 @@
             android:paddingLeft="4dp"
             android:paddingRight="4dp"
             android:includeFontPadding="false"
-            android:text="LIVE"
+            android:text="• LIVE"
             android:textColor="#FF0000"/>
         <!--        <View android:id="@id/exo_progress_placeholder"-->
         <!--            android:layout_width="0dp"-->

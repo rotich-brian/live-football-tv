@@ -1,5 +1,6 @@
 package com.bottom.footballtv.adapters;
 
+import android.app.Activity;
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -9,9 +10,11 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.bottom.footballtv.MainActivity;
 import com.bottom.footballtv.R;
-import com.bottom.footballtv.models.Eventcat;
-import com.bottom.footballtv.tools.SelectListener;
+import com.bottom.footballtv.models.Room.Eventcat;
+import com.bottom.footballtv.services.InterstitialAdService;
+import com.bottom.footballtv.services.SelectListener;
 import com.squareup.picasso.Picasso;
 
 import java.util.List;
@@ -21,14 +24,16 @@ import de.hdodenhof.circleimageview.CircleImageView;
 
 public class EventCatAdapter extends RecyclerView.Adapter<EventCatAdapter.ViewHolder> {
 
-    private List<Eventcat> eventcatList;
+    private List<com.bottom.footballtv.models.Room.Eventcat> eventcatList;
     private Context context;
     private String type;
+    private Activity activity;
     private SelectListener listener;
 
-    public EventCatAdapter(List<Eventcat> eventcatList, Context context, String type, SelectListener listener) {
+    public EventCatAdapter(List<com.bottom.footballtv.models.Room.Eventcat> eventcatList, Context context, Activity activity, String type, SelectListener listener) {
         this.eventcatList = eventcatList;
         this.context = context;
+        this.activity = activity;
         this.type = type;
         this.listener =listener;
     }
@@ -48,7 +53,7 @@ public class EventCatAdapter extends RecyclerView.Adapter<EventCatAdapter.ViewHo
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
-        Eventcat eventcat = eventcatList.get(position);
+        com.bottom.footballtv.models.Room.Eventcat eventcat = eventcatList.get(position);
 
         holder.catTitle.setText(eventcat.getCategory());
         try {
@@ -65,12 +70,22 @@ public class EventCatAdapter extends RecyclerView.Adapter<EventCatAdapter.ViewHo
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                listener.onCatItemClick(eventcat);
 
-                if (Objects.equals(type, "games")){
-//                    Navigation.findNavController(view).navigate(R.id.action_navigation_games_to_eventsFragment3);
+                MainActivity.AdClick +=1;
+                if (MainActivity.AdClick % 2 == 0) {
+                    InterstitialAdService.showInterstitialAd(context, activity, context.getResources().getString(R.string.InterstitialAdId), new InterstitialAdService.ShowInterstitialAd() {
+                        @Override
+                        public void onAdDismissed() {
+                            listener.onCatItemClick(eventcat);
+                        }
+
+                        @Override
+                        public void onAdNull() {
+                            listener.onCatItemClick(eventcat);
+                        }
+                    });
                 } else {
-//                    Navigation.findNavController(view).navigate(R.id.action_navigation_home_to_naviagtion_events);
+                    listener.onCatItemClick(eventcat);
                 }
             }
         });
@@ -79,6 +94,11 @@ public class EventCatAdapter extends RecyclerView.Adapter<EventCatAdapter.ViewHo
     @Override
     public int getItemCount() {
         return eventcatList.size();
+    }
+
+    public void updateEventCategories(List<Eventcat> eventcats) {
+        this.eventcatList = eventcats;
+        notifyDataSetChanged();
     }
 
     class ViewHolder extends RecyclerView.ViewHolder {

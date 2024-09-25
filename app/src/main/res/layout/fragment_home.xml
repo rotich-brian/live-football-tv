@@ -32,14 +32,37 @@
                 android:textColor="@color/black"
                 android:textSize="24sp" />
 
-            <ImageButton
-                android:id="@+id/notifyBtn"
+            <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="50dp"
-                android:layout_height="match_parent"
-                android:src="@drawable/baseline_notifications_none_24"
-                android:background="@android:color/transparent"
-                android:layout_marginEnd="5dp"
-                app:tint="@color/black" />
+                android:layout_height="match_parent">
+
+                <ImageButton
+                    android:id="@+id/notifyBtn"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    android:src="@drawable/baseline_notifications_none_24"
+                    android:background="@android:color/transparent"
+                    android:layout_marginEnd="5dp"
+                    app:tint="@color/black" />
+
+                <TextView
+                    android:id="@+id/notifyDot"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    app:layout_constraintEnd_toEndOf="@id/notifyBtn"
+                    app:layout_constraintTop_toTopOf="@id/notifyBtn"
+                    android:paddingTop="5dp"
+                    android:paddingEnd="2dp"
+                    android:text="•"
+                    android:visibility="gone"
+                    android:textSize="30sp"
+                    android:textStyle="bold"
+                    android:textColor="#F30606"/>
+            </androidx.constraintlayout.widget.ConstraintLayout>
         </LinearLayout>
 
         <!-- Search bar -->
@@ -52,14 +75,16 @@
             android:paddingHorizontal="5dp">
 
             <androidx.appcompat.widget.SearchView
-                android:layout_width="wrap_content"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_margin="10dp"
                 android:layout_weight="1"
-                android:hint="Search Game"
+                app:defaultQueryHint="Search Game"
                 app:iconifiedByDefault="false"
                 android:background="@drawable/searchview_bg"
                 app:queryBackground="@android:color/transparent" />
+
+
         </LinearLayout>
 
         <!-- Content below search bar -->
@@ -110,6 +135,17 @@
                         android:id="@+id/recyclerViewTop"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content" />
+
+                    <TextView
+                        android:id="@+id/noTopMatches"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_margin="10dp"
+                        android:layout_below="@id/recyclerViewTop"
+                        android:layout_centerInParent="true"
+                        android:text="No more Popular events at the moment"
+                        android:textStyle="italic"
+                        android:textSize="18sp"/>
                 </RelativeLayout>
             </LinearLayout>
         </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>

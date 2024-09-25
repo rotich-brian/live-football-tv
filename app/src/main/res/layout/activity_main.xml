@@ -11,6 +11,13 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_alignParentTop="true"
+        android:layout_above="@id/AdContainer"/>
+
+    <RelativeLayout
+        android:id="@+id/AdContainer"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/white"
         android:layout_above="@id/nav_view"/>
 
     <com.google.android.material.bottomnavigation.BottomNavigationView

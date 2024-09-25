@@ -1,17 +1,14 @@
 package com.bottom.footballtv.ui;
 
-import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.os.Bundle;
 
-import androidx.activity.OnBackPressedCallback;
-import androidx.annotation.Nullable;
+import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
-import android.os.Handler;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -20,63 +17,82 @@ import android.view.ViewGroup;
 import com.bottom.footballtv.R;
 import com.bottom.footballtv.adapters.EventAdapter;
 import com.bottom.footballtv.databinding.FragmentEventsBinding;
-import com.bottom.footballtv.models.Event;
-import com.bottom.footballtv.models.Eventcat;
-import com.bottom.footballtv.tools.SelectListener;
-import com.google.firebase.firestore.EventListener;
-import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.FirebaseFirestoreException;
-import com.google.firebase.firestore.QueryDocumentSnapshot;
-import com.google.firebase.firestore.QuerySnapshot;
+import com.bottom.footballtv.models.Room.Event;
+import com.bottom.footballtv.services.SelectListener;
+import com.bottom.footballtv.ui.viewmodel.EventViewModel;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 
 public class EventsFragment extends Fragment implements SelectListener {
     private static final String TAG = "EVENT_FRAGMENT_TAG";
 
-    private List<Event> events;
+    private List<com.bottom.footballtv.models.Room.Event> events;
     private EventAdapter eventAdapter;
-    private FirebaseFirestore db;
+    private EventViewModel eventViewModel;
 
-    private OnBackPressedCallback callback;
     private FragmentEventsBinding binding;
-    @SuppressLint("ResourceAsColor")
+
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         binding = FragmentEventsBinding.inflate(inflater,container,false);
-//        binding.getRoot().setBackgroundColor(R.color.white);
 
-        events = new ArrayList<>();
-        db = FirebaseFirestore.getInstance();
+        eventViewModel = new ViewModelProvider(this).get(EventViewModel.class);
 
         Bundle args = getArguments();
         if (args != null) {
-            Eventcat eventcat = (Eventcat) args.getSerializable("eventcat");
-            setTopEventData(eventcat);
+            com.bottom.footballtv.models.Room.Eventcat eventcat = (com.bottom.footballtv.models.Room.Eventcat) args.getSerializable("eventcat");
 
-            binding.catTitle.setText(eventcat.getCategory());
+            if (eventcat != null){
+                binding.catTitle.setText(eventcat.getCategory());
 
-            try {
-                Picasso.get()
-                        .load(eventcat.getThumbnail())
-                        .resize(150, 150)
-                        .centerCrop()
-                        .placeholder(R.mipmap.ic_launcher)
-                        .into(binding.catThumb);
-            } catch (Exception e){
-                binding.catThumb.setImageResource(R.mipmap.ic_launcher);
+                eventViewModel.init(eventcat.getCategory());
+
+                eventViewModel.listenForEvents(eventcat.getCatId(), eventcat.getCategory());
+
+                try {
+                    Picasso.get()
+                            .load(eventcat.getThumbnail())
+                            .resize(150, 150)
+                            .centerCrop()
+                            .placeholder(R.mipmap.ic_launcher)
+                            .into(binding.catThumb);
+                } catch (Exception e){
+                    binding.catThumb.setImageResource(R.mipmap.ic_launcher);
+                }
+
+                Log.d(TAG, "onCreateView: eventcat"+ eventcat.getCatId());
             }
-
-            Log.d(TAG, "onCreateView: eventcat"+ eventcat);
         }
 
+        setupRecyclerViews();
+        observeViewModelData();
+        setListeners();
+
+        return binding.getRoot();
+    }
+
+    private void setupRecyclerViews() {
+
         binding.recyclerView.setLayoutManager(new LinearLayoutManager(requireContext(),LinearLayoutManager.VERTICAL,false));
-        eventAdapter = new EventAdapter(events,requireContext(),this);
+        eventAdapter = new EventAdapter(new ArrayList<>(),requireContext(),requireActivity(),this);
         binding.recyclerView.setAdapter(eventAdapter);
+    }
+
+    private void observeViewModelData() {
+
+        eventViewModel.getEventsByCategory().observe(getViewLifecycleOwner(), events -> {
+            eventAdapter.updateEvents(events);
+        });
+    }
+
+    private void setListeners() {
+        binding.swipeRefresh.setOnRefreshListener(() -> {
+            eventViewModel.listenForEventCategories(); // Refresh categories
+            binding.swipeRefresh.setRefreshing(false);
+        });
 
         binding.backBtn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -85,65 +101,15 @@ public class EventsFragment extends Fragment implements SelectListener {
                 manager.popBackStackImmediate();
             }
         });
-
-//        callback = new OnBackPressedCallback(true) {
-//            @Override
-//            public void handleOnBackPressed() {
-//                FragmentManager manager = getFragmentManager();
-//                manager.popBackStackImmediate();
-//            }
-//        };
-//        requireActivity().getOnBackPressedDispatcher().addCallback(requireActivity(), callback);
-
-        return binding.getRoot();
-    }
-
-    private void setTopEventData(Eventcat eventcat) {
-
-        db.collection("eventcat")
-                .document(eventcat.getCatId())
-                .collection(eventcat.getCategory())
-                .addSnapshotListener(new EventListener<QuerySnapshot>() {
-                    @Override
-                    public void onEvent(@Nullable QuerySnapshot value,
-                                        @Nullable FirebaseFirestoreException e) {
-                        if (e != null) {
-                            Log.w(TAG, "Listen failed.", e);
-                            return;
-                        }
-
-                        if (value != null) {
-                            // Clear existing events
-                            events.clear();
-
-                            for (QueryDocumentSnapshot doc : value) {
-                                Event event = new Event();
-                                event.setEventId(doc.getId());
-                                event.setMatch(doc.getString("match"));
-                                event.setThumbnail(doc.getString("thumbnail"));
-                                event.setLink1(doc.getString("stream"));
-                                event.setOrigin(doc.getString("origin"));
-                                event.setReferrer(doc.getString("referer"));
-                                event.setUser_Agent(doc.getString("user-agent"));
-
-                                events.add(event);
-                            }
-
-                            // Notify adapter to update the UI
-                            eventAdapter.notifyDataSetChanged();
-                            Log.d(TAG, "Category Events: " + events);
-                        }
-                    }
-                });
     }
 
     @Override
-    public void onCatItemClick(Eventcat eventcat) {
+    public void onCatItemClick(com.bottom.footballtv.models.Room.Eventcat eventcat) {
 
     }
 
     @Override
-    public void onEventClick(Event event) {
+    public void onEventClick(com.bottom.footballtv.models.Room.Event event) {
         openStream(event);
     }
 
@@ -152,10 +118,4 @@ public class EventsFragment extends Fragment implements SelectListener {
         intent.putExtra("event",event);
         requireContext().startActivity(intent);
     }
-
-//    @Override
-//    public void onDestroy() {
-//        super.onDestroy();
-//        callback.remove();  // Clean up callback when fragment is destroyed
-//}
 }
