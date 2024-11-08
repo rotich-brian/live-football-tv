@@ -93,7 +93,7 @@ public class GamesFragment extends Fragment implements SelectListener {
     }
 
     @Override
-    public void onEventClick(Event event) {
+    public void onEventClick(Event event,int i) {
 
     }
 

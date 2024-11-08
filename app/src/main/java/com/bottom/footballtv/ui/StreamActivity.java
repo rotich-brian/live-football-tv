@@ -19,6 +19,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.bottom.footballtv.R;
 import com.bottom.footballtv.databinding.ActivityStreamBinding;
+import com.bottom.footballtv.models.LiveEvent;
 import com.bottom.footballtv.services.CustomHttpDataSourceFactory;
 import com.google.android.exoplayer2.ExoPlayer;
 import com.google.android.exoplayer2.MediaItem;
@@ -132,19 +133,19 @@ public class StreamActivity extends AppCompatActivity {
                 | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY
                 | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION);
 
-        com.bottom.footballtv.models.Room.Event event = (com.bottom.footballtv.models.Room.Event) getIntent().getSerializableExtra("event");
+        LiveEvent liveEvent = (LiveEvent) getIntent().getSerializableExtra("event");
 
-        if (event != null) {
-            Log.d(TAG, "Eventcat received: " + event.getCategory());
-            Log.d(TAG, "Eventcat received: " + event.getReferrer());
+        if (liveEvent != null) {
+            Log.d(TAG, "Event received: " + liveEvent.getEventId());
+            Log.d(TAG, "Event received: " + liveEvent.getReferrer());
 
-            referer = event.getReferrer();
-            origin = event.getOrigin();
-            userAgent = event.getUser_Agent();
+            referer = liveEvent.getReferrer();
+            origin = liveEvent.getOrigin();
+            userAgent = liveEvent.getUser_Agent();
 
-            hlsUrl = event.getLink1() != null ? event.getLink1() : "//";
+            hlsUrl = liveEvent.getStream() != null ? liveEvent.getStream() : "//";
         } else {
-            Log.d(TAG, "No Eventcat data received.");
+            Log.d(TAG, "No Event data received.");
             hlsUrl = "//";
         }
 

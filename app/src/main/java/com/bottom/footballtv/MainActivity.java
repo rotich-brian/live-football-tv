@@ -19,8 +19,10 @@ import androidx.fragment.app.FragmentTransaction;
 
 import com.bottom.footballtv.databinding.ActivityMainBinding;
 import com.bottom.footballtv.models.AppData;
+import com.bottom.footballtv.models.Room.Event;
 import com.bottom.footballtv.services.AppUpdateService;
 import com.bottom.footballtv.services.InterstitialAdService;
+import com.bottom.footballtv.services.RewardedAdService;
 import com.bottom.footballtv.ui.games.GamesFragment;
 import com.bottom.footballtv.ui.home.HomeFragment;
 import com.bottom.footballtv.ui.more.MoreFragment;
@@ -35,8 +37,11 @@ import com.google.android.material.bottomnavigation.BottomNavigationView;
 public class MainActivity extends AppCompatActivity {
     private final String TAG = "MAIN_ACTIVITY_TAG";
     public static int AdClick = 0;
+    public static int AdUnlock = 0;
     public static boolean newUpdate = false;
     public static AppData appDataM = new AppData();
+
+    public static Event SelectedItem = new Event();
 
     private RelativeLayout adContainer;
     private AdView adView;
@@ -57,6 +62,7 @@ public class MainActivity extends AppCompatActivity {
                 .start();
 
         InterstitialAdService.loadInterstitialAdAd(MainActivity.this, getResources().getString(R.string.InterstitialAdId));
+        RewardedAdService.loadRewardedAd(MainActivity.this, getResources().getString(R.string.RewardedAdId));
 
         BottomNavigationView navigationView = binding.navView;
         adContainer = binding.AdContainer;

@@ -80,6 +80,7 @@
                 android:layout_margin="10dp"
                 android:layout_weight="1"
                 app:defaultQueryHint="Search Game"
+                android:focusedByDefault="false"
                 app:iconifiedByDefault="false"
                 android:background="@drawable/searchview_bg"
                 app:queryBackground="@android:color/transparent" />

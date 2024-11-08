@@ -1,6 +1,7 @@
 package com.bottom.footballtv.ui.more;
 
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
@@ -56,6 +57,15 @@ public class NotificationFragment extends Fragment {
                 Intent intent = new Intent(requireContext(), NewUpdateActivity.class);
                 intent.putExtra("appData",MainActivity.appDataM);
                 requireActivity().startActivity(intent);
+            }
+        });
+
+        binding.watchPCCard.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                // Redirect to the app's page in Website
+                startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("https://www.livesports808.top/")));
             }
         });
 

@@ -21,6 +21,7 @@
             android:exported="false" />
         <activity
             android:name=".SplashActivity"
+            android:theme="@style/Theme.LiveFootballTVSplash.NoActionBar"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -36,8 +37,7 @@
             android:name=".ui.StreamActivity"
             android:configChanges="orientation|screenSize"
             android:exported="false"
-            android:hardwareAccelerated="true"
-            android:screenOrientation="fullSensor" />
+            android:hardwareAccelerated="true" />
 
         <meta-data
             android:name="com.google.android.gms.ads.APPLICATION_ID"

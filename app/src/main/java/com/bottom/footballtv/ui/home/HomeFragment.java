@@ -71,7 +71,7 @@ public class HomeFragment extends Fragment implements SelectListener {
         binding.recyclerViewCat.setAdapter(eventCatAdapter);
 
         binding.recyclerViewTop.setLayoutManager(new LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false));
-        eventAdapter = new EventAdapter(new ArrayList<>(), requireContext(), requireActivity(), this);
+        eventAdapter = new EventAdapter(new ArrayList<>(), requireContext(), requireActivity(), this, "home");
         binding.recyclerViewTop.setAdapter(eventAdapter);
     }
 
@@ -106,7 +106,7 @@ public class HomeFragment extends Fragment implements SelectListener {
     }
 
     @Override
-    public void onEventClick(com.bottom.footballtv.models.Room.Event event) {
+    public void onEventClick(com.bottom.footballtv.models.Room.Event event, int i) {
         Log.d(TAG, "onEventClick: GET CATEGORY" );
 
         eventViewModel.setUserClickedEvent(true);

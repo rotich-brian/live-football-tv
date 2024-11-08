@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <item>
+        <color android:color="@color/black" />
+    </item>
+    <!-- Circle background for icon -->
+    <item
+        android:gravity="center"
+        android:width="120dp"
+        android:height="120dp">
+        <shape android:shape="oval">
+            <solid android:color="@color/mycolor" />
+        </shape>
+    </item>
+    <!-- App icon -->
+    <item
+        android:width="60dp"
+        android:height="60dp"
+        android:gravity="center">
+        <bitmap
+            android:gravity="fill"
+            android:src="@drawable/livetv_icon" />
+    </item>
+</layer-list>

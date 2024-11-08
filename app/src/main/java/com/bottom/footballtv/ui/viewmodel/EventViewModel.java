@@ -13,12 +13,14 @@ import com.bottom.footballtv.models.Room.Event;
 import com.bottom.footballtv.models.Room.Eventcat;
 import com.bottom.footballtv.services.Room.EventsDao;
 import com.bottom.footballtv.services.Room.LocalDatabase;
+import com.google.firebase.Timestamp;
 import com.google.firebase.firestore.DocumentChange;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.ListenerRegistration;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -145,15 +147,32 @@ public class EventViewModel extends AndroidViewModel {
                             event.setMatch(doc.getString("match"));
                             event.setCategory(doc.getString("category"));
                             event.setThumbnail(doc.getString("thumbnail"));
+
+                            Timestamp timestamp = doc.getTimestamp("event_time");
+                            if (timestamp != null) {
+                                event.setEventTime(timestamp.toDate());
+                            }
+
                             event.setLink1(doc.getString("stream"));
-                            event.setOrigin(doc.getString("origin"));
-                            event.setReferrer(doc.getString("referer"));
-                            event.setUser_Agent(doc.getString("user_agent"));
+                            event.setLink2(doc.getString("stream2"));
+                            event.setLink3(doc.getString("stream3"));
+                            event.setOrigin1(doc.getString("origin"));
+                            event.setReferrer1(doc.getString("referer"));
+                            event.setUser_Agent1(doc.getString("user_agent"));
+                            event.setOrigin2(doc.getString("origin2"));
+                            event.setReferrer2(doc.getString("referer2"));
+                            event.setUser_Agent2(doc.getString("user_agent2"));
+                            event.setOrigin3(doc.getString("origin3"));
+                            event.setReferrer3(doc.getString("referer3"));
+                            event.setUser_Agent3(doc.getString("user_agent3"));
                             event.setTop(Boolean.TRUE.equals(doc.getBoolean("top")));
+
                             events.add(event);
 
                             Log.d(TAG, "listenForEvents: "+event.getCategory());
                         }
+
+                        events.sort((e1, e2) -> e1.getEventTime().compareTo(e2.getEventTime()));
 
                         for (DocumentChange dc : value.getDocumentChanges()) {
                             if (dc.getType() == DocumentChange.Type.REMOVED) {// A document was removed from Firestore

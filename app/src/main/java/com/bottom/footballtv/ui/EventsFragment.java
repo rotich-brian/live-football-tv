@@ -17,6 +17,7 @@ import android.view.ViewGroup;
 import com.bottom.footballtv.R;
 import com.bottom.footballtv.adapters.EventAdapter;
 import com.bottom.footballtv.databinding.FragmentEventsBinding;
+import com.bottom.footballtv.models.LiveEvent;
 import com.bottom.footballtv.models.Room.Event;
 import com.bottom.footballtv.services.SelectListener;
 import com.bottom.footballtv.ui.viewmodel.EventViewModel;
@@ -77,7 +78,7 @@ public class EventsFragment extends Fragment implements SelectListener {
     private void setupRecyclerViews() {
 
         binding.recyclerView.setLayoutManager(new LinearLayoutManager(requireContext(),LinearLayoutManager.VERTICAL,false));
-        eventAdapter = new EventAdapter(new ArrayList<>(),requireContext(),requireActivity(),this);
+        eventAdapter = new EventAdapter(new ArrayList<>(),requireContext(),requireActivity(),this, "event");
         binding.recyclerView.setAdapter(eventAdapter);
     }
 
@@ -109,11 +110,32 @@ public class EventsFragment extends Fragment implements SelectListener {
     }
 
     @Override
-    public void onEventClick(com.bottom.footballtv.models.Room.Event event) {
-        openStream(event);
+    public void onEventClick(com.bottom.footballtv.models.Room.Event event,int i) {
+        LiveEvent liveEvent = new LiveEvent();
+
+        liveEvent.setEventId(event.getEventId());
+        if (i==3) {
+            liveEvent.setStream(event.getLink3());
+            liveEvent.setOrigin(event.getOrigin3());
+            liveEvent.setReferrer(event.getReferrer3());
+            liveEvent.setUser_Agent(event.getUser_Agent3());
+        } else if(i==2) {
+            liveEvent.setStream(event.getLink2());
+            liveEvent.setOrigin(event.getOrigin2());
+            liveEvent.setReferrer(event.getReferrer2());
+            liveEvent.setUser_Agent(event.getUser_Agent2());
+        } else {
+            liveEvent.setStream(event.getLink1());
+            liveEvent.setOrigin(event.getOrigin1());
+            liveEvent.setReferrer(event.getReferrer1());
+            liveEvent.setUser_Agent(event.getUser_Agent1());
+        }
+
+        openStream(liveEvent);
     }
 
-    private void openStream(Event event) {
+    private void openStream(LiveEvent event) {
+
         Intent intent = new Intent(requireContext(), StreamActivity.class);
         intent.putExtra("event",event);
         requireContext().startActivity(intent);
